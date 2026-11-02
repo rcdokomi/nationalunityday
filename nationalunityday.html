@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Викторина: День народного единства</title>
+    <style>
+        :root {
+            --primary-color: #0052a5; /* Синий флаг */
+            --accent-color: #d62d20;  /* Красный флаг */
+            --bg-color: #f4f7f6;
+            --text-color: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: var(--primary-color);
+        }
+
+        p {
+            line-height: 1.6;
+            font-size: 1.1rem;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        /* Кнопки */
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.1s;
+        }
+
+        .btn:hover {
+            background-color: #003d7a;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-accent {
+            background-color: var(--accent-color);
+        }
+
+        .btn-accent:hover {
+            background-color: #b32117;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        /* Справка */
+        .history-text {
+            text-align: left;
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 10px;
+            margin-bottom: 20px;
+        }
+
+        /* Тест */
+        .options-list {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .option-item {
+            background: #f0f4f8;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .option-item:hover {
+            background: #e1e9f0;
+        }
+
+        .option-item.selected {
+            border-color: var(--primary-color);
+            background: #e1e9f0;
+        }
+
+        .progress {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- ГЛАВНАЯ СТРАНИЦА -->
+        <div id="main-screen" class="screen active">
+            <h1>День народного единства</h1>
+            <p>Добро пожаловать в праздничную интерактивную программу! Проверьте свои знания об истории этого важного дня или освежите память в исторической справке.</p>
+            <div class="btn-group">
+                <button class="btn" onclick="showScreen('history-screen')">Историческая справка</button>
+                <button class="btn btn-accent" onclick="startQuiz()">Пройти тест</button>
+            </div>
+        </div>
+
+        <!-- ИСТОРИЧЕСКАЯ СПРАВКА -->
+        <div id="history-screen" class="screen">
+            <h2>Историческая справка</h2>
+            <div class="history-text">
+                <p><strong>День народного единства</strong> отмечается в России 4 ноября. Этот праздник был учрежден в память о событиях 1612 года, когда народное ополчение под предводительством Кузьмы Минина и Дмитрия Пожарского штурмом взяло Китай-город и освободило Москву от польских интервентов.</p>
+                <p>Это событие положило конец Смутному времени — глубокому кризису, терзавшему Российское государство на стыке XVI и XVII веков.</p>
+                <p>Особенность этого подвига в том, что в рядах ополчения сплотились люди разных сословий, национальностей и вероисповеданий. Праздник символизирует сплоченность народа, благодаря которой Россия смогла сохранить свою независимость и государственность.</p>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-accent" onclick="startQuiz()">Перейти к тесту</button>
+                <button class="btn btn-secondary" onclick="showScreen('main-screen')">На главную</button>
+            </div>
+        </div>
+
+        <!-- СТРАНИЦА ТЕСТА -->
+        <div id="quiz-screen" class="screen">
+            <div class="progress">Вопрос <span id="current-question-num">1</span> из <span id="total-questions-num">5</span></div>
+            <h3 id="question-text">Текст вопроса</h3>
+            <ul class="options-list" id="options-container">
+                <!-- Варианты ответов генерируются через JS -->
+            </ul>
+            <div class="btn-group">
+                <button class="btn btn-accent" id="next-btn" onclick="nextQuestion()">Далее</button>
+            </div>
+        </div>
+
+        <!-- РЕЗУЛЬТАТЫ -->
+        <div id="result-screen" class="screen">
+            <h2>Результаты теста</h2>
+            <p id="result-text">Вы ответили правильно на 0 из 5 вопросов.</p>
+            <div class="btn-group">
+                <button class="btn" onclick="startQuiz()">Пройти еще раз</button>
+                <button class="btn btn-secondary" onclick="showScreen('main-screen')">На главную</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                question: "В каком году Москва была освобождена от польских интервентов?",
+                options: ["1380 год", "1612 год", "1709 год", "1812 год"],
+                correct: 1
+            },
+            {
+                question: "Кто возглавил Второе народное ополчение?",
+                options: ["Иван Сусанин и Степан Разин", "Петр I и Александр Меншиков", "Кузьма Минин и Дмитрий Пожарского", "Александр Невский"],
+                correct: 2
+            },
+            {
+                question: "Какой исторический период завершился благодаря освобождению Москвы?",
+                options: ["Золотой век", "Эпоха дворцовых переворотов", "Смутное время", "Феодальная раздробленность"],
+                correct: 2
+            },
+            {
+                question: "Какая икона стала духовным символом народного ополчения?",
+                options: ["Казанская икона Божией Матери", "Владимирская икона Божией Матери", "Троица Андрея Рублева", "Икона Спас Нерукотворный"],
+                correct: 0
+            },
+            {
+                question: "В каком городе начало формироваться Второе народное ополчение?",
+                options: ["В Новгороде Великом", "В Нижнем Новгороде", "В Костроме", "В Суздале"],
+                correct: 1
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let selectedOptionIndex = null;
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function startQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            showScreen('quiz-screen');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            selectedOptionIndex = null;
+            const currentQuestion = quizData[currentQuestionIndex];
+            
+            document.getElementById('current-question-num').innerText = currentQuestionIndex + 1;
+            document.getElementById('total-questions-num').innerText = quizData.length;
+            document.getElementById('question-text').innerText = currentQuestion.question;
+
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+
+            currentQuestion.options.forEach((option, index) => {
+                const li = document.createElement('li');
+                li.className = 'option-item';
+                li.innerText = option;
+                li.onclick = () => selectOption(index, li);
+                optionsContainer.appendChild(li);
+            });
+
+            document.getElementById('next-btn').disabled = true;
+            document.getElementById('next-btn').style.opacity = '0.5';
+        }
+
+        function selectOption(index, element) {
+            selectedOptionIndex = index;
+            
+            document.querySelectorAll('.option-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            element.classList.add('selected');
+
+            document.getElementById('next-btn').disabled = false;
+            document.getElementById('next-btn').style.opacity = '1';
+        }
+
+        function nextQuestion() {
+            if (selectedOptionIndex === quizData[currentQuestionIndex].correct) {
+                score++;
+            }
+
+            currentQuestionIndex++;
+
+            if (currentQuestionIndex < quizData.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            showScreen('result-screen');
+            document.getElementById('result-text').innerHTML = `Вы ответили правильно на <strong>${score}</strong> из <strong>${quizData.length}</strong> вопросов.`;
+        }
+    </script>
+</body>
+</html>
